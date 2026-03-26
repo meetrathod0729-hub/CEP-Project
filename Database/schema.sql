@@ -21,3 +21,32 @@ CREATE TABLE tokens (
     CONSTRAINT fk_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
     CONSTRAINT fk_hospital FOREIGN KEY (hospital_id) REFERENCES hospitals(id) ON DELETE CASCADE
 );
+
+CREATE TABLE triage_submissions (
+
+submission_id SERIAL PRIMARY KEY,
+
+patient_name VARCHAR(120),
+age INT,
+gender VARCHAR(10),
+
+chest_pain BOOLEAN,
+breathing_difficulty BOOLEAN,
+heavy_bleeding BOOLEAN,
+unconscious BOOLEAN,
+severe_burns BOOLEAN,
+head_injury BOOLEAN,
+accident BOOLEAN,
+high_fever BOOLEAN,
+vomiting BOOLEAN,
+seizure BOOLEAN,
+
+pain_level INT,
+symptom_duration_hours INT,
+
+priority_score INT,
+triage_category VARCHAR(10),
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
