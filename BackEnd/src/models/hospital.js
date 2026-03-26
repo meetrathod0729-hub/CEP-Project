@@ -1,2 +1,0 @@
-
-const hospitalSchema=new mon
