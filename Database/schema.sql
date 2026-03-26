@@ -73,3 +73,35 @@ CREATE TABLE patients (
 
   created_at TIMESTAMPTZ DEFAULT now()
 );
+CREATE TABLE hospitals (
+    id SERIAL PRIMARY KEY,
+
+    name VARCHAR(150) NOT NULL,
+    address TEXT,
+
+    latitude DECIMAL(10,8),
+    longitude DECIMAL(11,8),
+
+    -- Capacity
+    total_rooms INT NOT NULL,
+    emergency_rooms INT NOT NULL,
+    icu_beds INT NOT NULL,
+    ventilators INT NOT NULL,
+
+    -- Current Load
+    occupied_rooms INT DEFAULT 0,
+    available_rooms INT DEFAULT 0,
+
+    occupied_icu INT DEFAULT 0,
+    available_icu INT DEFAULT 0,
+
+    staff_available INT DEFAULT 0,
+
+    -- Status
+    status VARCHAR(20)
+    CHECK (status IN ('AVAILABLE', 'BUSY', 'FULL'))
+    DEFAULT 'AVAILABLE',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
