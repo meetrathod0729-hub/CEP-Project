@@ -50,3 +50,26 @@ triage_category VARCHAR(10),
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 );
+
+CREATE TABLE patients (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  name VARCHAR(100) NOT NULL,
+  age INT CHECK (age >= 0 AND age <= 120),
+  gender VARCHAR(10) CHECK (gender IN ('Male', 'Female', 'Other')),
+
+  phone VARCHAR(15) UNIQUE NOT NULL,
+
+  blood_group VARCHAR(5) CHECK (
+    blood_group IN ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-')
+  ),
+
+  allergies TEXT[] DEFAULT '{}',
+
+  emergency_contact VARCHAR(15),
+
+  latitude DECIMAL(10,8),
+  longitude DECIMAL(11,8),
+
+  created_at TIMESTAMPTZ DEFAULT now()
+);
