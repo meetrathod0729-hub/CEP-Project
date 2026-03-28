@@ -1,4 +1,5 @@
 const prisma = require("../config/db");
+const { sendNotification } = require("../services/notificationService");
 
 // CREATE TOKEN
 const createToken = async (req, res) => {
@@ -22,6 +23,12 @@ const createToken = async (req, res) => {
         tokenNumber: newTokenNumber,
         estimatedTime,
       },
+    });
+
+    // 🔔 SEND NOTIFICATION
+    await sendNotification({
+      type: "TOKEN_CREATED",
+      payload: token,
     });
 
     res.status(201).json({
@@ -86,6 +93,12 @@ const updateTokenStatus = async (req, res) => {
     const updatedToken = await prisma.token.update({
       where: { id: parseInt(id) },
       data: { status },
+    });
+
+    // 🔔 SEND NOTIFICATION
+    await sendNotification({
+      type: "TOKEN_UPDATED",
+      payload: updatedToken,
     });
 
     res.status(200).json({
