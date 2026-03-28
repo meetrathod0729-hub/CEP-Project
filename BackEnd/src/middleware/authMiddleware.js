@@ -1,54 +1,37 @@
-const jwt = require("jsonwebtoken");
-const Patient = require("../models/patient");
-const Hospital = require("../models/hospital");
+const prisma = require("../config/prisma");
+const { assignHospital } = require("../services/loadbalancingService");
 
-const authMiddleware = async (req, res, next) => {
+exports.createTriage = async (req, res) => {
     try {
-        const authHeader = req.headers.authorization;
+        const { severity } = req.body;
 
-        // 1. Check token exists
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({
-                success: false,
-                message: "No token provided"
-            });
-        }
-
-        // 2. Extract token
-        const token = authHeader.split(" ")[1];
-
-        // 3. Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // 4. Identify user type (patient / hospital)
-        let user = null;
-
-        if (decoded.role === "patient") {
-            user = await Patient.findById(decoded.id).select("-password");
-        } 
-        else if (decoded.role === "hospital") {
-            user = await Hospital.findById(decoded.id).select("-password");
-        }
-
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: "User not found"
-            });
-        }
-
-        // 5. Attach to request
-        req.user = user;
-        req.role = decoded.role;
-
-        next();
-
-    } catch (error) {
-        return res.status(401).json({
-            success: false,
-            message: "Invalid or expired token"
+        // 1. Create triage
+        const triage = await prisma.triage.create({
+            data: {
+                severity,
+                patientId: req.user.id
+            }
         });
+
+        // 2. Assign hospital
+        const hospital = await assignHospital(severity);
+
+        // 3. Update triage
+        const updated = await prisma.triage.update({
+            where: { id: triage.id },
+            data: {
+                hospitalId: hospital.id,
+                status: "assigned"
+            }
+        });
+
+        res.json({
+            success: true,
+            triage: updated,
+            hospital
+        });
+
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };
-
-module.exports = authMiddleware;
