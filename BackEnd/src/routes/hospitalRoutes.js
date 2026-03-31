@@ -1,21 +1,16 @@
 const express = require("express");
+const { PrismaClient } = require("@prisma/client");
+
 const router = express.Router();
+const prisma = new PrismaClient();
 
-const hospitalController = require("../controllers/hospitalController");
-
-// 🔹 CREATE hospital
-router.post("/", hospitalController.createHospital);
-
-// 🔹 GET all hospitals
-router.get("/", hospitalController.getAllHospitals);
-
-// 🔹 GET hospital by ID
-router.get("/:id", hospitalController.getHospitalById);
-
-// 🔹 UPDATE hospital
-router.put("/:id", hospitalController.updateHospital);
-
-// 🔹 DELETE hospital
-router.delete("/:id", hospitalController.deleteHospital);
+router.get("/", async (req, res) => {
+  try {
+    const hospitals = await prisma.hospital.findMany();
+    res.json(hospitals);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch hospitals" });
+  }
+});
 
 module.exports = router;

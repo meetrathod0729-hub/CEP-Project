@@ -1,10 +1,22 @@
 {
+  "name": "cep-project",
+  "version": "1.0.0",
+  "main": "BackEnd/src/server.js",
+  "scripts": {
+    "start": "node BackEnd/src/server.js",
+    "dev": "nodemon BackEnd/src/server.js",
+    "seed": "node BackEnd/seed.js",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push"
+  },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "prisma": "^5.22.0"
   }
 }
