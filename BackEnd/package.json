@@ -3,7 +3,12 @@
     "version": "1.0.0",
     "main": "server.js",
     "scripts": {
+<<<<<<< HEAD
         "start": "node server.js"
+=======
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+>>>>>>> afd6c15baa9da5d998547b5fb07f67bdc3b0e06f
     },
     "dependencies": {
         "@prisma/client": "^5.22.0",
