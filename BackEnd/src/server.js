@@ -19,9 +19,8 @@
 //   console.log("Server running on port 5000");
 // });
 
-
-const app = require("./app");
 require("dotenv").config();
+const app = require("./src/app");
 
 const PORT = process.env.PORT || 5000;
 
