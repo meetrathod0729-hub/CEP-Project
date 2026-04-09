@@ -6,7 +6,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center px-6">
+    <div className="min-h-screen bg-linear-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center px-6">
       {/* Background glow */}
       <div className="absolute top-20 left-20 w-72 h-72 rounded-full blur-3xl bg-blue-500/20"></div>
       <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full blur-3xl bg-cyan-400/20"></div>
@@ -51,7 +51,7 @@ export default function Login() {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-lg"
+              className="w-full py-4 rounded-2xl bg-linear-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-lg"
             >
               Login
             </motion.button>
