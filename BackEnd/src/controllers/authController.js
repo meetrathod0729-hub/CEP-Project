@@ -1,11 +1,12 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import prisma from "../prisma/client.js";
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { PrismaClient } = require("@prisma/client");
 
+const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 /* REGISTER */
-export const register = async (req, res) => {
+const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -38,7 +39,7 @@ export const register = async (req, res) => {
 };
 
 /* LOGIN */
-export const login = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -72,8 +73,7 @@ export const login = async (req, res) => {
   }
 };
 
-/* VERIFY TOKEN MIDDLEWARE */
-export const verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   const header = req.headers.authorization;
 
   if (!header) {
@@ -89,4 +89,10 @@ export const verifyToken = (req, res, next) => {
   } catch (error) {
     res.status(403).json({ message: "Invalid token" });
   }
+};
+
+module.exports = {
+  register,
+  login,
+  verifyToken
 };
