@@ -1,20 +1,28 @@
-// utils/hospitalSelector.js
-
 const { calculateHospitalLoad } = require("./calculateLoad");
 const { calculateDistance } = require("./distance");
 
-const selectBestHospital = (hospitals, patientLocation, priority) => {
-  let bestHospital = null;
-  let bestScore = Infinity;
+/**
+ * Select nearest hospitals based on TOTAL TIME
+ * totalTime = travelTime + waitTime
+ */
+
+const selectNearestHospitals = (
+  hospitals,
+  patientLocation,
+  priority,
+  limit = 10
+) => {
+  let filtered = [];
 
   for (let hospital of hospitals) {
 
-    // ❌ skip full hospitals
+    // ❌ Skip full hospitals
     if (hospital.status === "FULL") continue;
 
-    // ❌ RED needs ICU
+    // ❌ RED patients need ICU
     if (priority === "RED" && hospital.available_icu <= 0) continue;
 
+    // 📍 Distance in KM
     const distance = calculateDistance(
       patientLocation.lat,
       patientLocation.lon,
@@ -22,20 +30,41 @@ const selectBestHospital = (hospitals, patientLocation, priority) => {
       hospital.longitude
     );
 
+    // 🚗 Travel Time (in minutes)
+    const avgSpeed = 30; // km/h
+    const travelTime = (distance / avgSpeed) * 60;
+
+    // 🏥 Wait Time (you can improve later)
+    const waitTime =
+      hospital.estimated_wait_time ||
+      hospital.avgWaitTime ||
+      10;
+
+    // 📊 Load (optional)
     const load = calculateHospitalLoad(hospital);
 
-    // final score
-    const score = (distance * 0.5) + (load * 0.5);
+    // ⏱️ TOTAL TIME
+    const totalTime = travelTime + waitTime;
 
-    if (score < bestScore) {
-      bestScore = score;
-      bestHospital = hospital;
-    }
+    filtered.push({
+      ...hospital,
+      distance,      // km
+      travelTime,    // minutes
+      waitTime,      // minutes
+      totalTime,     // minutes
+      load
+    });
   }
 
-  return bestHospital;
+  // 🔥 SORT BY LOWEST TOTAL TIME
+  filtered.sort((a, b) => a.totalTime - b.totalTime);
+
+  // 🔝 Return top N
+  return filtered.slice(0, limit);
 };
 
 module.exports = {
-  selectBestHospital
+  selectNearestHospitals
 };
+
+hospital sector js

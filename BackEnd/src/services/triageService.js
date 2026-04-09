@@ -4,7 +4,7 @@ const triageModel = require("../models/triage");
 const hospitalModel = require("../models/hospital");
 
 const { calculateRiskScore, getRiskCategory } = require("../utils/riskScore");
-const { selectBestHospital } = require("../utils/hospitalSelector");
+const { selectNearestHospitals } = require("../utils/hospitalSelector");
 
 
 const processTriage = async (data) => {
@@ -24,21 +24,22 @@ const processTriage = async (data) => {
   // 🔹 Step 4: Fetch hospitals
   const hospitals = await hospitalModel.getAllHospitals();
 
-  // 🔹 Step 5: Select best hospital
-  const bestHospital = selectBestHospital(
+  // 🔹 Step 5: Select nearest hospitals (based on TOTAL TIME)
+  const nearestHospitals = selectNearestHospitals(
     hospitals,
     {
       lat: data.latitude,
       lon: data.longitude
     },
-    category
+    category,
+    10 // top 10 hospitals
   );
 
   return {
     triage: triageResult,
     priority_score: score,
     triage_category: category,
-    hospital: bestHospital
+    nearestHospitals   // 🔥 important change
   };
 };
 
@@ -46,3 +47,5 @@ const processTriage = async (data) => {
 module.exports = {
   processTriage
 };
+
+triage service.js
