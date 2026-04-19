@@ -1,91 +1,61 @@
-const pool = require("../config/db");
-
+const prisma = require("../config/db");
 
 /*
 CREATE TRIAGE SUBMISSION
-Stores questionnaire results
 */
 
 const createTriage = async (triageData) => {
+  try {
+    const result = await prisma.triageSubmission.create({
+      data: {
+        patient_name: triageData.patient_name || "Unknown",
+        age: Number(triageData.age) || 0,
+        gender: triageData.gender || "UNKNOWN",
 
-const query = `
-INSERT INTO triage_submissions
-(
-patient_name,
-age,
-gender,
-chest_pain,
-breathing_difficulty,
-heavy_bleeding,
-unconscious,
-severe_burns,
-head_injury,
-accident,
-high_fever,
-vomiting,
-seizure,
-pain_level,
-symptom_duration_hours,
-priority_score,
-triage_category
-)
+        chest_pain: triageData.chest_pain ?? false,
+        breathing_difficulty: triageData.breathing_difficulty ?? false,
+        heavy_bleeding: triageData.heavy_bleeding ?? false,
+        unconscious: triageData.unconscious ?? false,
+        severe_burns: triageData.severe_burns ?? false,
+        head_injury: triageData.head_injury ?? false,
+        accident: triageData.accident ?? false,
+        high_fever: triageData.high_fever ?? false,
+        vomiting: triageData.vomiting ?? false,
+        seizure: triageData.seizure ?? false,
 
-VALUES
-($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+        pain_level: Number(triageData.pain_level) || 0,
+        symptom_duration_hours: Number(triageData.symptom_duration_hours) || 0,
 
-RETURNING *
-`;
+        priority_score: Number(triageData.priority_score) || 0,
+        triage_category: triageData.triage_category || "GREEN",
+      },
+    });
 
-const values = [
+    return result;
 
-triageData.patient_name,
-triageData.age,
-triageData.gender,
-
-triageData.chest_pain,
-triageData.breathing_difficulty,
-triageData.heavy_bleeding,
-triageData.unconscious,
-triageData.severe_burns,
-triageData.head_injury,
-triageData.accident,
-triageData.high_fever,
-triageData.vomiting,
-triageData.seizure,
-
-triageData.pain_level,
-triageData.symptom_duration_hours,
-
-triageData.priority_score,
-triageData.triage_category
-
-];
-
-const result = await pool.query(query, values);
-
-return result.rows[0];
-
+  } catch (error) {
+    console.error("❌ TRIAGE MODEL ERROR:", error);
+    throw error;
+  }
 };
-
 
 
 /*
-GET ALL TRIAGE SUBMISSIONS
-Used for admin / logs
+GET ALL TRIAGE
 */
 
 const getAllTriage = async () => {
-
-const result = await pool.query(`
-SELECT *
-FROM triage_submissions
-ORDER BY created_at DESC
-`);
-
-return result.rows;
-
+  try {
+    return await prisma.triageSubmission.findMany({
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+  } catch (error) {
+    console.error("❌ GET ALL TRIAGE ERROR:", error);
+    throw error;
+  }
 };
-
 
 
 /*
@@ -93,22 +63,21 @@ GET TRIAGE BY ID
 */
 
 const getTriageById = async (id) => {
-
-const result = await pool.query(
-`SELECT * FROM triage_submissions WHERE submission_id = $1`,
-[id]
-);
-
-return result.rows[0];
-
+  try {
+    return await prisma.triageSubmission.findUnique({
+      where: {
+        submission_id: id,
+      },
+    });
+  } catch (error) {
+    console.error("❌ GET TRIAGE BY ID ERROR:", error);
+    throw error;
+  }
 };
 
 
-
 module.exports = {
-
-createTriage,
-getAllTriage,
-getTriageById
-
+  createTriage,
+  getAllTriage,
+  getTriageById,
 };

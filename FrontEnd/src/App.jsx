@@ -1,27 +1,32 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
 import Hospitals from "./pages/Hospitals";
-import Triage from "./pages/Triage";
+import Dashboard from "./pages/Dashboard";
 import TokenBooking from "./pages/TokenBooking";
+import Triage from "./pages/Triage";
 import AdminDashboard from "./pages/AdminDashboard";
+import ThemeToggle from "./components/ThemeToggle";
+
+import TokenStatus from "./pages/TokenStatus";
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
+      <ThemeToggle />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/hospitals" element={<Hospitals />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/token-booking" element={<TokenBooking />} />
+        <Route path="/token-status" element={<TokenStatus />} />
         <Route path="/triage" element={<Triage />} />
-        <Route path="/token" element={<TokenBooking />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 

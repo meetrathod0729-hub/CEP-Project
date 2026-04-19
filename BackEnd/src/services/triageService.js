@@ -1,51 +1,49 @@
-// services/triageService.js
-
-const triageModel = require("../models/triage");
-const hospitalModel = require("../models/hospital");
-
 const { calculateRiskScore, getRiskCategory } = require("../utils/riskScore");
 const { selectNearestHospitals } = require("../utils/hospitalSelector");
-
-
+const hospitalModel = require("../models/hospital");
 const processTriage = async (data) => {
+  try {
+    const score = calculateRiskScore(data);
+    const category = getRiskCategory(score);
 
-  // 🔹 Step 1: Calculate score
-  const score = calculateRiskScore(data);
+    data.priority_score = score;
+    data.triage_category = category;
 
-  // 🔹 Step 2: Get category
-  const category = getRiskCategory(score);
+    // 🔥 TEMP: skip DB save
+    const triageResult = {
+      message: "Triage processed (not saved)",
+      ...data,
+    };
 
-  data.priority_score = score;
-  data.triage_category = category;
+    const hospitals = await hospitalModel.getAllHospitals();
 
-  // 🔹 Step 3: Save triage
-  const triageResult = await triageModel.createTriage(data);
+    if (!hospitals || hospitals.length === 0) {
+      throw new Error("No hospitals available");
+    }
 
-  // 🔹 Step 4: Fetch hospitals
-  const hospitals = await hospitalModel.getAllHospitals();
+    const patientLocation = {
+      lat: data.latitude || 19.0760,
+      lon: data.longitude || 72.8777,
+    };
 
-  // 🔹 Step 5: Select nearest hospitals (based on TOTAL TIME)
-  const nearestHospitals = selectNearestHospitals(
-    hospitals,
-    {
-      lat: data.latitude,
-      lon: data.longitude
-    },
-    category,
-    10 // top 10 hospitals
-  );
+    const nearestHospitals = await selectNearestHospitals(
+      hospitals,
+      patientLocation,
+      category,
+      10
+    );
 
-  return {
-    triage: triageResult,
-    priority_score: score,
-    triage_category: category,
-    nearestHospitals   // 🔥 important change
-  };
+    return {
+      triage: triageResult,
+      priority_score: score,
+      triage_category: category,
+      nearestHospitals,
+    };
+  } catch (error) {
+    console.error("Triage Service Error:", error);
+    throw error;
+  }
 };
-
-
 module.exports = {
   processTriage
 };
-
-triage service.js

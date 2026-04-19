@@ -19,7 +19,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/hospitals", hospitalRoutes);
 app.use("/api/triage", triageRoutes);
-app.use("/api/tokens", tokenRoutes);
+app.use("/api/token", tokenRoutes);
 
 // test route
 app.get("/", (req, res) => {
